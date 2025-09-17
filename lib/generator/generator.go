@@ -211,9 +211,16 @@ func (g *Generator) prepareSenders() {
 		txs = append(txs, signedTx)
 	}
 	txs_num := len(txs)
-	log.Default().Println("Total", txs_num, "txs had been send.")
-	log.Default().Println("Waiting for receipts... and sleep", txs_num/5000, "Minute")
-	time.Sleep(time.Duration(txs_num/5000) * time.Minute)
+	log.Default().Printf("Total %d txs will be sent.", txs_num)
+	waitMinutes := txs_num / 5000
+	var duration time.Duration
+	if waitMinutes == 0 {
+		duration = 10 * time.Second
+	} else {
+		duration = time.Duration(waitMinutes) * time.Minute
+	}
+	log.Default().Printf("Waiting for receipts... sleeping for %v", duration)
+	time.Sleep(duration)
 	// err = util.WaitForReceiptsOfTxs(client, txs, 10*time.Minute)
 	// if err != nil {
 	// 	panic(err)
